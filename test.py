@@ -9,8 +9,8 @@ def elect_handler():
 def error_handler(e):
     print(datetime.datetime.now(), e)
 
-def revoke_handler():
-    print(datetime.datetime.now(), 'revoked')
+def release_handler():
+    print(datetime.datetime.now(), 'released')
 
 r = Redis(host='localhost', port=6379, db=0)
 
@@ -18,7 +18,7 @@ le = LeaderElection(r, lock_key='test')
 
 le.on('elected', elect_handler)
 le.on('error', error_handler)
-le.on('revoked', revoke_handler)
+le.on('released', release_handler)
 
 le.elect()
 
