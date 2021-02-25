@@ -36,13 +36,13 @@ class LeaderElection(object):
             if ok != 1:
                 if self.renew_timer:
                     self.renew_timer.cancel()
-                self._emit('revoked')
+                self._emit('released')
                 self.elect()
                 
         else:
             if self.renew_timer:
                 self.renew_timer.cancel()
-            self._emit('revoked')
+            self._emit('released')
             self.elect()
             
 
