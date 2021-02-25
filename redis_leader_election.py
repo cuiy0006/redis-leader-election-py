@@ -81,6 +81,7 @@ class LeaderElection(object):
             self.renew_timer.cancel()
         if self.elect_timer:
             self.elect_timer.cancel()
+        self._emit('released')
 
     def on(self, event_name: str, callback: Callable):
         if event_name not in self.callbacks:
