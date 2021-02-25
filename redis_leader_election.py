@@ -75,13 +75,13 @@ class LeaderElection(object):
         if self.is_leader():
             try:
                 self.redis.delete(self.lock_key)
-                self._emit('released')
             except RedisError as e:
                 self._emit('error', e)
         if self.renew_timer:
             self.renew_timer.cancel()
         if self.elect_timer:
             self.elect_timer.cancel()
+        self._emit('released')
 
     def on(self, event_name: str, callback: Callable):
         if event_name not in self.callbacks:
