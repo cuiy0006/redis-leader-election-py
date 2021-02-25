@@ -46,7 +46,7 @@ class LeaderElection(object):
 
     def elect(self):
         if not self.released:
-            raise RuntimeError('Duplicated calls to elect')
+            raise RuntimeError('Duplicated calls to elect before release')
 
         res = None
         try:
