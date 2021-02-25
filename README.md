@@ -19,7 +19,7 @@ Initialize a leader election
 ```
 le.on('elected', elect_handler)
 le.on('error', error_handler)
-le.on('revoked', revoke_handler)
+le.on('released', release_handler)
 ```
 Subscribe events of leader election  
 <br/><br/>
