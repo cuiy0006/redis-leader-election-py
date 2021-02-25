@@ -21,6 +21,7 @@ class LeaderElection(object):
         self.lock_key = sha.hexdigest()
 
         self.callbacks = {}
+        self.released = True
 
     def _renew(self):
         if self.is_leader():
@@ -34,19 +35,19 @@ class LeaderElection(object):
                 self._emit('error', KeyError('lock key does not exist when renew'))
 
             if ok != 1:
-                if self.renew_timer:
-                    self.renew_timer.cancel()
-                self._emit('released')
+                self.release()
                 self.elect()
                 
         else:
-            if self.renew_timer:
-                self.renew_timer.cancel()
-            self._emit('released')
+            self._emit('error', RuntimeError('renewing when not a leader'))
+            self.release()
             self.elect()
             
 
     def elect(self):
+        if not self.released:
+            raise RuntimeError('Duplicated calls to elect')
+
         res = None
         try:
             res = self.redis.set(self.lock_key, self.id, px=self.lease_timeout, nx=True)
@@ -58,6 +59,7 @@ class LeaderElection(object):
             self.elect_timer.start()
         else:
             self._emit('elected')
+            self.released = False
             self.renew_timer = RepeatTimer(self.lease_timeout / 1000 / 2, self._renew)
             self.renew_timer.start()
 
@@ -81,6 +83,7 @@ class LeaderElection(object):
             self.renew_timer.cancel()
         if self.elect_timer:
             self.elect_timer.cancel()
+        self.released = True
         self._emit('released')
 
     def on(self, event_name: str, callback: Callable):
