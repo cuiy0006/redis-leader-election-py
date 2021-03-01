@@ -22,9 +22,17 @@ le.on('released', release_handler)
 
 le.elect()
 
+cnt = 0
 while True:
     if le.is_leader():
         print(datetime.datetime.now(), 'doing the task')
         time.sleep(10)
         print(datetime.datetime.now(), 'done the task')
+        cnt += 1
+        if cnt == 5:
+            le.release()
+            print('-----------------')
+            time.sleep(11)
+            le.elect()
+            cnt = 0
     time.sleep(50)
