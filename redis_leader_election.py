@@ -29,17 +29,17 @@ class LeaderElection(object):
             try:
                 ok = self.redis.pexpire(self.lock_key, self.lease_timeout)
             except RedisError as e:
-                self._emit('error', e)
+                self._emit('error', '_renew', e)
 
             if ok == 0:
-                self._emit('error', KeyError('lock key does not exist when renew'))
+                self._emit('error', '_renew', KeyError('lock key does not exist when renew'))
 
             if ok != 1:
                 self.release()
                 self.elect()
                 
         else:
-            self._emit('error', RuntimeError('renewing when not a leader'))
+            self._emit('error', '_renew', RuntimeError('renewing when not a leader'))
             self.release()
             self.elect()
             
@@ -52,7 +52,8 @@ class LeaderElection(object):
         try:
             res = self.redis.set(self.lock_key, self.id, px=self.lease_timeout, nx=True)
         except RedisError as e:
-            self._emit('error', e)
+            self._emit('error', 'elect', e)
+            raise e
 
         if res is None:
             self.elect_timer = Timer(self.acquire_lock_interval / 1000, self.elect)
@@ -68,7 +69,7 @@ class LeaderElection(object):
         try:
             id = self.redis.get(self.lock_key)
         except RedisError as e:
-            self._emit('error', e)
+            self._emit('error', 'is_leader', e)
 
         id = id.decode()
         return (id is not None and id == self.id)
@@ -78,7 +79,7 @@ class LeaderElection(object):
             try:
                 self.redis.delete(self.lock_key)
             except RedisError as e:
-                self._emit('error', e)
+                self._emit('error', 'release', e)
         if self.renew_timer:
             self.renew_timer.cancel()
         if self.elect_timer:

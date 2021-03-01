@@ -6,8 +6,8 @@ import time
 def elect_handler():
     print(datetime.datetime.now(), 'elected')
 
-def error_handler(e):
-    print(datetime.datetime.now(), e)
+def error_handler(function_name, e):
+    print(datetime.datetime.now(), f'in function [{function_name}]', e)
 
 def release_handler():
     print(datetime.datetime.now(), 'released')
