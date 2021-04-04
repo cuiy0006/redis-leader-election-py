@@ -1,0 +1,14 @@
+version: '3'
+services:
+    rle-development-py:
+        image: rle-development
+        build:
+            context: .
+        depends_on:
+            - redis_db
+        volumes:
+            - .:/workarea
+    redis_db:
+        image: redis
+        # ports:
+        #     - 6379:6379

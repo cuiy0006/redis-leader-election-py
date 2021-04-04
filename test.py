@@ -12,7 +12,7 @@ def error_handler(function_name, e):
 def release_handler():
     print(datetime.datetime.now(), 'released')
 
-r = Redis(host='localhost', port=6379, db=0)
+r = Redis(host='redis_db', port=6379, db=0)
 
 le = LeaderElection(r, lock_key='test')
 

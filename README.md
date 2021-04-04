@@ -1,8 +1,14 @@
-## Set up env  
+## Set up local env  
 ```
 python3 -m venv env
 . env/bin/activate
 pip3 install redis
+```
+<br/><br/>
+## Set up docker env
+```
+docker-compose build
+docker-compose run --rm --entrypoint /bin/bash rle-development-py
 ```
 <br/><br/>
 ## API
